@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>qq</title>
+</head>
+<style>
+    *{
+        padding: 0;
+        margin: 0;
+    }
+    .estab{
+        width: 100%;
+        height: 662px;
+        background:palevioletred;
+        text-align: center
+    }
+    .estab h1{
+        padding-top: 100px;
+        color: white;
+    }
+    .estab div{
+        margin-top: 50px;
+    }
+    .estab div input{
+        background: white;
+        border: none;
+        border-radius:5px;
+        height: 40px;
+        width: 350px; 
+        padding-left:5px; 
+    }
+    .estab div button{
+        padding: 11px 15px;
+        border: none;
+        border-radius:5px;
+        margin-left: 20px; 
+    }
+    .chat-box{
+        display: none;
+        width: 100%;
+        height: 662px;
+        padding-top:50px; 
+    }
+    .chat-box .chat{
+        height: 500px;
+        width: 40%;
+        float: left;
+    }
+    .liat{
+        height: 500px;
+        margin-left: 400px;
+        float: left;
+        background: rgb(241, 241, 241);
+    }
+    .liat ul{
+        height: auto;
+        width: 150px;
+        list-style: none;
+
+    }
+    .liat ul li{
+        width: 150px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        background: blueviolet;
+
+    }
+    .liat ul li:hover{
+        background: darkcyan;
+    }
+    .chat ul{
+        height: 450px;
+        width: 100%;
+        background:  white;
+        list-style: none;
+        padding: 5px;
+        overflow: auto;
+
+    }
+    .chat ul li{
+        margin-top: 10px;
+        width: auto;
+    }
+    .chat input{
+        height: 40px;
+        margin-top: 10px;
+        border: none;
+        border-radius:5px; 
+        width: 86.5%;
+        padding-left:5px; 
+        background:orange;
+    }
+    .chat button{
+        height: 40px;
+        border: none;
+        border-radius:5px; 
+        padding: 0 15px;
+        margin-left: 10px;
+        background:red;
+    }
+    
+    .back{
+        /* display: inline; */
+        margin-top: 15px;
+        text-align: center;
+        height: 16px;
+        background:hotpink;
+        color: white;
+        border-radius:10px;
+        padding: 5px 10px;
+        font-size: 14px;
+        margin: 0 auto;
+    }
+    .menews{
+        text-align: right;
+        color: aqua;
+        /* background:rgb(173, 72, 4); */
+    }
+    .usernews{
+        text-align: left;
+        background: #ccc;
+    }
+</style>
+<body>
+    <div class="estab" id="estab">
+        <h1>微 信</h1>
+        <div> <input type="text" placeholder="请输入你的名称" id="name"><button id="estabbtn">登陆</button></div>
+    </div>
+    <div class="chat-box" id="chata">
+        <div class="liat"> 
+            <ul id="ullist">
+
+            </ul>
+        </div>
+        <div class="chat">
+            <ul id="ul">
+
+            </ul>
+            <div><input type="text" id="outdata"><button id="out">发送</button></div> 
+        </div>
+    </div>
+</body>
+<script>
+    let name=document.getElementById("name")
+    let userinfo={//先创建一个数组
+        name:"",
+        data:"",
+
+    }
+    estabbtn.onclick=function (){
+        if(name.value==""){
+            alert("名字不能为空")
+            return false
+        }else{
+            chata.style.display="block"
+            estab.style.display="none"
+            
+        }
+        socket= new WebSocket('ws://localhost:3000')
+        socket.onopen =function(){//创建连接
+            userinfo.name=name.value//数组里的name的值和登陆框的值一致
+            userinfo.ige=1//如果接收的值是1
+            socket.send(JSON.stringify(userinfo))//那么输出这个定义的数据
+            
+        }
+    
+            socket.onmessage = function(event){//广播
+                if(userinfo.ige===1){
+                    let list=JSON.parse(event.data)
+                    let data=[]
+                    var str=""
+                    data.push(list.name)
+                    for(item in data){
+                        str+=
+                        "<li class='back'>温馨提示："+data+"以上线</li>"
+                    }
+                    ul.innerHTML+=str
+                    ullist.innerHTML+=
+                    "<li class='liststyle'>"+data+"</li>"
+                }else{
+                    let list=JSON.parse(event.data)
+                    
+                    var str=""
+                    let data=[]
+                    data.push(list.data)
+                    console.log(data)
+                    for(item in data){
+                        if(userinfo.name==userinfo.name){
+                            str+=
+                                "<li class='menews'>"+data+"</li>"
+                        }else{
+                            str+=
+                                "<li class='usernews'>"+data+"</li>"
+                        }
+                        
+                    }
+                    ul.innerHTML+=str
+
+                }
+                
+
+            }
+            socket.onerror = function(){
+                alert("出错！！")
+            }
+        
+    }
+    out.onclick=function(){
+        // console.log("event")
+        userinfo.ige=2
+        userinfo.data=outdata.value
+        socket.send(JSON.stringify(userinfo))
+        
+        
+    }
+
+    
+</script>
+</html>
